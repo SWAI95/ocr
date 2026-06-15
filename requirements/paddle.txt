@@ -1,0 +1,13 @@
+# === PaddleOCR (Primary 엔진) — GPU ===
+# PaddlePaddle GPU 휠은 PyPI에 없음. 공식 인덱스에서 설치해야 함.
+# cu126 휠 = 드라이버 CUDA 12.8(dev 5090) / 12.9(배포 4090) 모두 호환,
+#            RTX4090(sm_89) 네이티브 지원. (cu128 빌드는 미제공)
+#
+# 설치:
+#   pip install -r requirements/paddle.txt \
+#     --index-url https://www.paddlepaddle.org.cn/packages/stable/cu126/ \
+#     --extra-index-url https://pypi.org/simple
+#
+# 오프라인(내부망): scripts/make_wheelhouse.sh 가 이 인덱스에서 휠을 받아둠.
+paddlepaddle-gpu==3.3.1
+paddleocr==3.6.0

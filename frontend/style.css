@@ -1,0 +1,84 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: -apple-system, "Noto Sans KR", "Malgun Gothic", sans-serif;
+  background: #0f1419; color: #e6e6e6;
+}
+header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px; background: #1a212b; border-bottom: 1px solid #2a3340;
+}
+header h1 { font-size: 18px; margin: 0; }
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: #2a3340; }
+.badge.offline { background: #6b3030; }
+.badge.online { background: #2f5d3a; }
+
+main {
+  display: grid; grid-template-columns: 320px 1fr 360px; gap: 12px;
+  padding: 12px; height: calc(100vh - 50px);
+}
+.panel {
+  background: #161c24; border: 1px solid #2a3340; border-radius: 8px;
+  padding: 14px; overflow: auto;
+}
+.panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .5px;
+  color: #7da2c4; margin: 14px 0 8px; }
+.panel h2:first-child { margin-top: 0; }
+
+label { display: block; font-size: 13px; margin: 8px 0 2px; color: #b8c4d0; }
+label.check { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+select, input[type=number], textarea, input[type=file] {
+  width: 100%; padding: 6px 8px; background: #0f1419; color: #e6e6e6;
+  border: 1px solid #2a3340; border-radius: 5px; font-size: 13px;
+}
+textarea { resize: vertical; font-family: monospace; }
+.hint { font-size: 11px; color: #8a97a3; margin-top: 4px; min-height: 14px; }
+button#runBtn {
+  width: 100%; margin-top: 14px; padding: 10px; font-size: 14px; font-weight: 600;
+  background: #2f6fd6; color: #fff; border: none; border-radius: 6px; cursor: pointer;
+}
+button#runBtn:disabled { background: #44525f; cursor: wait; }
+button#compareBtn {
+  width: 100%; margin-top: 8px; padding: 9px; font-size: 13px; font-weight: 600;
+  background: #3a4654; color: #fff; border: 1px solid #4a5a6a; border-radius: 6px; cursor: pointer;
+}
+button#compareBtn:disabled { background: #2a3340; cursor: wait; }
+.status { font-size: 12px; margin-top: 8px; min-height: 16px; color: #f0c674; white-space: pre-wrap; }
+
+table.cmp { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 8px; }
+table.cmp th, table.cmp td { border: 1px solid #2a3340; padding: 5px 7px; text-align: right; }
+table.cmp th { background: #1a212b; color: #7da2c4; }
+table.cmp td:first-child, table.cmp th:first-child { text-align: left; }
+table.cmp tr.best td { background: #16301f; }
+table.cmp td.err { color: #e57373; text-align: left; }
+
+/* 페이지별 오버레이 카드 (세로 누적) */
+#pages { display: flex; flex-direction: column; gap: 12px; }
+.pagecard { background: #0a0d11; border: 1px solid #2a3340; border-radius: 6px; overflow: hidden; }
+.phead { font-size: 12px; color: #7da2c4; padding: 6px 10px; background: #1a212b;
+  border-bottom: 1px solid #2a3340; position: sticky; top: 0; }
+.pageimg { width: 100%; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 11px; margin-bottom: 8px; }
+.legend span { display: flex; align-items: center; gap: 4px; }
+.legend i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.metric { background: #0f1419; border: 1px solid #2a3340; border-radius: 6px; padding: 10px; }
+.metric .v { font-size: 22px; font-weight: 700; }
+.metric .k { font-size: 11px; color: #8a97a3; }
+.metric.good .v { color: #7bd88f; }
+.metric.bad .v { color: #e57373; }
+
+.textout { font-family: monospace; font-size: 13px; white-space: pre-wrap;
+  background: #0f1419; border: 1px solid #2a3340; border-radius: 6px; padding: 10px;
+  max-height: calc(100vh - 320px); overflow: auto; line-height: 1.6; }
+.textout .line { padding: 1px 0; }
+.textout .pagesep { color: #f0c674; font-size: 11px; margin: 10px 0 4px;
+  border-top: 1px dashed #2a3340; padding-top: 6px; }
+.textout .pagesep:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+.textout .reg { color: #7da2c4; font-size: 10px; margin-right: 6px; }
+.timings { font-size: 11px; color: #8a97a3; margin-top: 6px; }
+
+#tables .tbl { margin-bottom: 10px; }
+#tables table { border-collapse: collapse; width: 100%; font-size: 12px; }
+#tables td, #tables th { border: 1px solid #3a4654; padding: 4px 6px; color: #e6e6e6; }
+#tables tr:first-child td { background: #1a212b; font-weight: 600; }

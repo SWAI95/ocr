@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# 모델 가중치 (별도 번들로 반입 — 레포에 커밋하지 않음)
+models/**
+!models/.gitkeep
+
+# 오프라인 번들 산출물
+wheelhouse/
+*.tar.gz
+
+# 런타임 산출물
+data/outputs/**
+!data/outputs/.gitkeep
+samples/**
+!samples/.gitkeep
+
+# 로그
+*.log

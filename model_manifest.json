@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "description": "선택 가능한 OCR 모델 카탈로그 + 오프라인 다운로드 대상. 웹 드롭다운과 download_models.py가 이 파일을 참조한다.",
+  "engines": {
+    "paddle": {
+      "label": "PaddleOCR 3.x (PP-StructureV3)",
+      "license": "Apache-2.0",
+      "stages": {
+        "layout": [
+          {"id": "PP-DocLayout_plus-L", "desc": "고정밀 레이아웃(23종, 각주/머리글/도장 구분)", "default": true},
+          {"id": "PP-DocLayout-L", "desc": "레이아웃 L"},
+          {"id": "PP-DocLayout-M", "desc": "레이아웃 M(중간)"},
+          {"id": "PP-DocLayout-S", "desc": "레이아웃 S(경량)"}
+        ],
+        "detection": [
+          {"id": "PP-OCRv5_server_det", "desc": "텍스트 검출 server(고정밀)", "default": true},
+          {"id": "PP-OCRv5_mobile_det", "desc": "텍스트 검출 mobile(경량/빠름)"}
+        ],
+        "recognition": [
+          {"id": "korean_PP-OCRv5_mobile_rec", "lang": "korean", "desc": "한국어 전용 v5 mobile", "default": true},
+          {"id": "PP-OCRv5_server_rec", "lang": "multi", "desc": "다국어 server(한+영+숫자+기호)"},
+          {"id": "PP-OCRv5_mobile_rec", "lang": "multi", "desc": "다국어 mobile"},
+          {"id": "korean_PP-OCRv3_mobile_rec", "lang": "korean", "desc": "한국어 v3(대조군)"}
+        ],
+        "textline_orientation": [
+          {"id": "PP-LCNet_x1_0_textline_ori", "desc": "텍스트라인 회전 분류", "default": true}
+        ],
+        "table": [
+          {"id": "SLANeXt_wired", "desc": "유선 표 구조", "default": true},
+          {"id": "SLANet_plus", "desc": "표 구조(plus)"}
+        ],
+        "seal": [
+          {"id": "PP-OCRv4_server_seal_det", "desc": "도장 검출 server", "default": true},
+          {"id": "PP-OCRv4_mobile_seal_det", "desc": "도장 검출 mobile"}
+        ]
+      }
+    },
+    "paddle_vl": {
+      "label": "PaddleOCR-VL-0.9B (VLM, in-process) — 4090 GPU 필요",
+      "license": "Apache-2.0",
+      "note": "VLM. native 백엔드로 in-process(서버 불필요). RTX4090(sm_89) GPU에서 동작. Blackwell(5090) dev에서는 paddle 커널 미지원으로 실행 불가(CUDA_VISIBLE_DEVICES= 로도 gpu-paddle이 CUDA 강제).",
+      "stages": {
+        "recognition": [
+          {"id": "PaddleOCR-VL-1.6-0.9B", "lang": "multi", "desc": "0.9B VLM, 109개 언어, 마크다운/표 출력", "default": true}
+        ],
+        "layout": [
+          {"id": "PP-DocLayoutV3", "desc": "VL 파이프라인 내장 레이아웃", "default": true}
+        ]
+      }
+    },
+    "hybrid_vl": {
+      "label": "하이브리드 (Paddle 레이아웃 → 폼·표=Paddle / 줄글=Qwen VLM)",
+      "license": "Apache-2.0 + model별 상이",
+      "note": "페이지를 Paddle 레이아웃으로 분류해 table 지배 페이지는 PPStructureV3, 줄글 페이지는 Qwen2.5VL 로 라우팅. 폼 CER + 줄글 WER 을 둘 다 취함. paddleocr + Ollama 서버 필요.",
+      "stages": {
+        "layout": [
+          {"id": "PP-DocLayout_plus-L", "desc": "페이지 분류용 레이아웃(고정밀)", "default": true},
+          {"id": "PP-DocLayout-L", "desc": "레이아웃 L"},
+          {"id": "PP-DocLayout-M", "desc": "레이아웃 M(중간)"},
+          {"id": "PP-DocLayout-S", "desc": "레이아웃 S(경량)"}
+        ],
+        "recognition": [
+          {"id": "qwen2.5vl:7b", "lang": "multi", "desc": "줄글 인식 VLM, 강한 한글 (권장)", "default": true},
+          {"id": "qwen2.5vl:3b", "lang": "multi", "desc": "경량 VLM, 빠름"},
+          {"id": "gemma3:27b", "lang": "multi", "desc": "범용 멀티모달"}
+        ]
+      }
+    },
+    "ollama_vl": {
+      "label": "Ollama VLM (로컬, dev 5090 GPU 동작)",
+      "license": "model별 상이",
+      "note": "로컬 Ollama 서버(127.0.0.1:11434) 비전 모델. Blackwell 우회. 박스 없음(VLM).",
+      "stages": {
+        "recognition": [
+          {"id": "qwen2.5vl:7b", "lang": "multi", "desc": "OCR 특화 VLM, 강한 한글 (권장)", "default": true},
+          {"id": "qwen2.5vl:3b", "lang": "multi", "desc": "경량 VLM, 빠름"},
+          {"id": "gemma3:27b", "lang": "multi", "desc": "범용 멀티모달(이미 설치됨)"}
+        ]
+      }
+    },
+    "easyocr": {
+      "label": "EasyOCR (CRAFT + CRNN)",
+      "license": "Apache-2.0",
+      "stages": {
+        "detection": [{"id": "craft", "desc": "CRAFT 텍스트 검출", "default": true}],
+        "recognition": [{"id": "korean_g2", "lang": "ko,en", "desc": "한국어+영어 CRNN", "default": true}]
+      }
+    },
+    "tesseract": {
+      "label": "Tesseract 5 (LSTM)",
+      "license": "Apache-2.0",
+      "stages": {
+        "recognition": [
+          {"id": "kor+eng", "lang": "ko,en", "desc": "한국어+영어", "default": true},
+          {"id": "kor", "lang": "ko", "desc": "한국어"},
+          {"id": "eng", "lang": "en", "desc": "영어"}
+        ]
+      }
+    }
+  }
+}

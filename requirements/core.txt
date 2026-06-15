@@ -1,0 +1,11 @@
+# --- Core web + utils (오프라인 설치 대상, 프레임워크 무관) ---
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.18
+pydantic==2.10.4
+numpy==1.26.4
+opencv-python-headless==4.10.0.84
+Pillow==11.0.0
+pdf2image==1.17.0
+jiwer==4.0.0
+python-Levenshtein==0.26.1

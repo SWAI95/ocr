@@ -1,0 +1,6 @@
+# === 옵션 엔진 (기본 off, 라이선스 검토 필요) ===
+#   pip install -r requirements/optional.txt
+#
+# ⚠️ DocLayout-YOLO: YOLOv10 기반 AGPL-3.0. 외부 배포 없는 내부 전용이면
+#    보통 무방하나 법무 확인 권장. (레이아웃 검출 대안)
+doclayout-yolo==0.0.4

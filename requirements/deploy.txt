@@ -1,0 +1,25 @@
+# === 내부망 배포(RTX 4090, sm_89, CUDA 12.9 드라이버) 통합 requirements ===
+#
+# 핵심: dev(5090)는 torch cu128 이지만, 배포 4090에서는 torch 도 **cu126** 으로
+# 맞춰 paddlepaddle-gpu(cu126)와 nvidia-*-cu12 라이브러리를 공유 → paddle·torch
+# 둘 다 GPU 사용 가능(버전 충돌 없음). 4090(sm_89)은 cu126 네이티브 지원.
+#
+# wheelhouse 생성(빌드 머신, 인터넷 O):
+#   PY=./.venv/bin/python REQ=requirements/deploy.txt bash scripts/make_wheelhouse.sh
+# 내부망 설치(인터넷 X):
+#   pip install --no-index --find-links wheelhouse -r requirements/deploy.txt
+
+paddlepaddle-gpu==3.3.1
+paddleocr==3.6.0
+paddlex[ocr]==3.6.1
+torch==2.9.1
+torchvision==0.24.1
+easyocr==1.7.2
+
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.18
+pdf2image==1.17.0
+jiwer==4.0.0
+python-Levenshtein==0.26.1
+opencv-python-headless==4.11.0.86

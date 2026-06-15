@@ -1,0 +1,12 @@
+# === EasyOCR 용 PyTorch (GPU) ===
+# cu128 휠 = Blackwell(sm_120, dev 5090) + Ada(sm_89, 배포 4090) 모두 지원.
+#
+# 설치:
+#   pip install -r requirements/torch.txt \
+#     --index-url https://download.pytorch.org/whl/cu128 \
+#     --extra-index-url https://pypi.org/simple
+#
+# 정확한 핀은 설치 후 requirements.lock.txt 에 동결됨.
+torch==2.9.1
+torchvision==0.24.1
+easyocr==1.7.2

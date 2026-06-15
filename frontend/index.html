@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오프라인 한국어 OCR 벤치</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <h1>오프라인 한국어 OCR 벤치</h1>
+    <span id="offlineBadge" class="badge"></span>
+  </header>
+
+  <main>
+    <!-- 좌: 컨트롤 -->
+    <section id="controls" class="panel">
+      <h2>1. 모델 선택</h2>
+      <label>엔진
+        <select id="engine"></select>
+      </label>
+      <div id="engineLicense" class="hint"></div>
+
+      <label>언어
+        <select id="lang">
+          <option value="korean">한국어 (korean)</option>
+          <option value="en">영어 (en)</option>
+          <option value="ch">중국어 (ch)</option>
+        </select>
+      </label>
+
+      <label>Detection 모델
+        <select id="det_model"></select>
+      </label>
+      <label>Recognition 모델
+        <select id="rec_model"></select>
+      </label>
+      <label>Layout(객체인식) 모델
+        <select id="layout_model"></select>
+      </label>
+
+      <label class="check"><input type="checkbox" id="use_layout" checked /> 레이아웃(객체 인식) 사용</label>
+      <label class="check"><input type="checkbox" id="use_table" checked /> 표 구조 인식 (PPStructureV3) — 문서는 필수</label>
+      <label class="check"><input type="checkbox" id="use_seal" /> 도장/인장 인식</label>
+      <label class="check"><input type="checkbox" id="use_gpu" checked /> GPU 사용</label>
+
+      <div class="hint" style="margin-top:8px">전처리(영상처리) — 문서별 효과 상이, 직접 실험</div>
+      <label class="check"><input type="checkbox" id="pp_red" /> 빨간 도장/인장 억제</label>
+      <label class="check"><input type="checkbox" id="pp_flatten" /> 배경/워터마크 평탄화</label>
+      <label class="check"><input type="checkbox" id="pp_barcode" /> 바코드 영역 마스킹</label>
+
+      <h2>2. 문서 (이미지 / PDF)</h2>
+      <input type="file" id="file" accept="image/*,application/pdf" />
+      <div class="hint">PDF는 전체 페이지(기본 최대 100p, 환경변수 OCR_MAX_PAGES 로 조정)를 한 번에 OCR 합니다.</div>
+
+      <h2>3. 정답 라벨 (선택, CER/WER)</h2>
+      <input type="file" id="gt_files" accept=".txt,text/plain" multiple />
+      <div class="hint">.txt 를 올리면 파일명 순서대로 이어붙여 비교합니다. 여러 개(페이지별) / 합본 1개 모두 가능. 아래에서 직접 수정 OK.</div>
+      <textarea id="ground_truth" rows="5" placeholder="정답 텍스트 (파일 업로드 시 자동 채움 · 직접 입력도 가능)"></textarea>
+
+      <button id="runBtn">▶ 전체 페이지 실행</button>
+      <button id="compareBtn">⚖ 멀티엔진 비교 (전체 페이지)</button>
+      <div id="status" class="status"></div>
+    </section>
+
+    <!-- 중앙: 시각화 (페이지별로 세로 누적) -->
+    <section id="viz" class="panel">
+      <h2>시각화 (페이지별)</h2>
+      <div class="legend" id="legend"></div>
+      <div id="pages"></div>
+    </section>
+
+    <!-- 우: 결과 -->
+    <section id="results" class="panel">
+      <h2>지표</h2>
+      <div id="metrics" class="metrics"></div>
+      <div id="compareWrap" style="display:none">
+        <h2>엔진 비교</h2>
+        <table id="compareTable" class="cmp"></table>
+      </div>
+      <div id="tablesWrap" style="display:none">
+        <h2>표 구조</h2>
+        <div id="tables"></div>
+      </div>
+      <h2>인식 텍스트</h2>
+      <div id="text" class="textout"></div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
