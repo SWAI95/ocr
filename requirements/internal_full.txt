@@ -1,0 +1,53 @@
+# === 내부망 OCR 전체 의존성 (자체 포함, 단일 파일) ===
+#
+# 이 파일 하나면 OCR 실행에 필요한 모듈을 "전부" 받는다(torch·paddle 포함).
+# 용도:
+#   ① 깨끗한 전용 venv 에 처음부터 다 깔 때 (부록 B 방식)
+#   ② wheelhouse 에 필요한 휠을 빠짐없이 모을 때
+# (aicore 복사본 위에 '델타만' 얹을 때는 이 파일 대신 internal.txt + constraints.txt 사용.)
+#
+# 정책: torch 계열만 cu129 고정 / numpy 2.x / OCR 엔진 코어 3종 핀 / 나머지 최신.
+#
+# ---- 휠 수집 (빌드 머신, 인터넷 O) — 세 인덱스 필수 ----
+#   pip download -r requirements/internal_full.txt -d wheelhouse \
+#     --index-url https://pypi.org/simple \
+#     --extra-index-url https://download.pytorch.org/whl/cu129 \
+#     --extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cu129/
+#
+# ---- 설치 ----
+#   (온라인) 위와 동일 인덱스로 pip install
+#   (오프라인) pip install --no-index --find-links wheelhouse -r requirements/internal_full.txt
+#
+# ⚠️ paddlepaddle-gpu 가 cu129 휠로 받혔는지 확인:
+#     wheelhouse 안에 paddlepaddle_gpu-3.3.1-...cu129...whl 존재해야 GPU 동작.
+# 상세 절차: docs/내부망_배포_가이드.md
+
+# --- GPU 런타임 (torch 계열만 cu129 고정) ---
+torch==2.8.0+cu129
+torchvision==0.23.0+cu129
+paddlepaddle-gpu==3.3.1
+
+# --- OCR 엔진 코어 (엔진 코드가 3.6.x API에 결합 → 핀 유지) ---
+paddleocr==3.6.0
+paddlex[ocr]==3.6.1
+transformers==4.57.6        # PaddleOCR-VL(paddle_vl) native backend
+
+# --- 수치/영상 (numpy 2.x 상향, 나머지 최신) ---
+numpy>=2.1,<3
+opencv-python-headless
+
+# --- OCR 보조 엔진/입출력 ---
+easyocr
+pypdfium2                    # PDF → 이미지 (poppler 불필요, 기본 경로)
+pdf2image                   # poppler 폴백(선택)
+
+# --- 평가 지표 (CER/WER) ---
+jiwer
+python-Levenshtein
+
+# --- 웹 서버 / API (자체 포함용) ---
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+pillow

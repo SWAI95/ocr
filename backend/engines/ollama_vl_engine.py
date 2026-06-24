@@ -153,19 +153,28 @@ class OllamaVLEngine(OCREngine):
                 "0.0.0.0 로 떠 있는지 확인하세요. (WSL→Windows 는 OLLAMA_HOST=0.0.0.0)")
         model = self._resolve_model(opts, avail)
 
-        ok, buf = cv2.imencode(".jpg", image)
+        # VLM 입력 인코딩 포맷. 기본 jpg(문서화된 베이스라인 보존). png 는 무손실이라
+        # ₩ 가로줄 등 미세 글자 디테일을 보존 → OCR_VLM_IMG_FMT=png 로 켜서 CER 비교.
+        fmt = os.environ.get("OCR_VLM_IMG_FMT", "jpg").lower()
+        ext = ".png" if fmt == "png" else ".jpg"
+        ok, buf = cv2.imencode(ext, image)
         b64 = base64.b64encode(buf.tobytes()).decode()
 
         t0 = time.perf_counter()
         # temperature=0(greedy) + 고정 seed → Qwen 출력 재현 가능(웹↔보고서 일치).
         # seed 없으면 실행마다 미세 변동 → hybrid 안전장치 병합 on/off 가 흔들려 CER 진폭 큼.
+        options = {"temperature": 0, "num_predict": 4096,
+                   "seed": int(os.environ.get("OCR_OLLAMA_SEED", "0"))}
+        # CPU 강제(use_gpu=False): num_gpu=0 으로 Ollama 를 GPU 오프로드 없이 CPU 로 실행.
+        # CPU 성능 측정용 — 안 주면 Ollama 가 알아서 GPU 를 잡아 CPU 시간이 안 나온다.
+        if not opts.use_gpu:
+            options["num_gpu"] = 0
         resp = _api(self.host, "/api/generate", {
             "model": model,
             "prompt": _OCR_PROMPT,
             "images": [b64],
             "stream": False,
-            "options": {"temperature": 0, "num_predict": 4096,
-                        "seed": int(os.environ.get("OCR_OLLAMA_SEED", "0"))},
+            "options": options,
         })
         dt = round((time.perf_counter() - t0) * 1000, 1)
         text = (resp.get("response") or "").strip()

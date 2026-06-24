@@ -1,0 +1,206 @@
+{
+  "gpu": {
+    "doc_00": {
+      "paddle": {
+        "cer": 2.16,
+        "wer": 43.18,
+        "total_s": 13.4,
+        "per_page_s": 2.7,
+        "pages": 5,
+        "device": "gpu:0"
+      },
+      "paddle_vl": {
+        "cer": 7.46,
+        "wer": 16.66,
+        "total_s": 77.3,
+        "per_page_s": 15.5,
+        "pages": 5,
+        "device": "gpu:0"
+      },
+      "hybrid_vl": {
+        "cer": 1.6,
+        "wer": 14.46,
+        "total_s": 46.4,
+        "per_page_s": 9.3,
+        "pages": 5,
+        "device": "gpu:0/ollama:qwen2.5vl:7b"
+      },
+      "ollama_vl": {
+        "cer": 2.92,
+        "wer": 13.64,
+        "total_s": 33.0,
+        "per_page_s": 6.6,
+        "pages": 5,
+        "device": "ollama:qwen2.5vl:7b"
+      },
+      "easyocr": {
+        "cer": 11.31,
+        "wer": 44.96,
+        "total_s": 12.4,
+        "per_page_s": 2.5,
+        "pages": 5,
+        "device": "gpu"
+      },
+      "tesseract": {
+        "cer": 33.08,
+        "wer": 168.13,
+        "total_s": 7.9,
+        "per_page_s": 1.6,
+        "pages": 5,
+        "device": "cpu"
+      }
+    },
+    "doc_04": {
+      "paddle": {
+        "cer": 1.16,
+        "wer": 35.8,
+        "total_s": 3.0,
+        "per_page_s": 0.3,
+        "pages": 11,
+        "device": "gpu:0"
+      },
+      "paddle_vl": {
+        "cer": 0.72,
+        "wer": 5.04,
+        "total_s": 127.9,
+        "per_page_s": 11.6,
+        "pages": 11,
+        "device": "gpu:0"
+      },
+      "hybrid_vl": {
+        "cer": 0.76,
+        "wer": 4.19,
+        "total_s": 62.9,
+        "per_page_s": 5.7,
+        "pages": 11,
+        "device": "gpu:0/ollama:qwen2.5vl:7b"
+      },
+      "ollama_vl": {
+        "cer": 1.82,
+        "wer": 4.82,
+        "total_s": 63.1,
+        "per_page_s": 5.7,
+        "pages": 11,
+        "device": "ollama:qwen2.5vl:7b"
+      },
+      "easyocr": {
+        "cer": 8.02,
+        "wer": 34.16,
+        "total_s": 17.5,
+        "per_page_s": 1.6,
+        "pages": 11,
+        "device": "gpu"
+      },
+      "tesseract": {
+        "cer": 28.69,
+        "wer": 174.33,
+        "total_s": 16.9,
+        "per_page_s": 1.5,
+        "pages": 11,
+        "device": "cpu"
+      }
+    },
+    "doc_05": {
+      "paddle": {
+        "cer": 2.45,
+        "wer": 32.39,
+        "total_s": 3.2,
+        "per_page_s": 0.3,
+        "pages": 12,
+        "device": "gpu:0"
+      },
+      "paddle_vl": {
+        "cer": 2.03,
+        "wer": 6.06,
+        "total_s": 139.7,
+        "per_page_s": 11.6,
+        "pages": 12,
+        "device": "gpu:0"
+      },
+      "hybrid_vl": {
+        "cer": 1.34,
+        "wer": 5.42,
+        "total_s": 69.9,
+        "per_page_s": 5.8,
+        "pages": 12,
+        "device": "gpu:0/ollama:qwen2.5vl:7b"
+      },
+      "ollama_vl": {
+        "cer": 1.64,
+        "wer": 4.19,
+        "total_s": 69.7,
+        "per_page_s": 5.8,
+        "pages": 12,
+        "device": "ollama:qwen2.5vl:7b"
+      },
+      "easyocr": {
+        "cer": 8.89,
+        "wer": 32.89,
+        "total_s": 17.7,
+        "per_page_s": 1.5,
+        "pages": 12,
+        "device": "gpu"
+      },
+      "tesseract": {
+        "cer": 16.35,
+        "wer": 199.26,
+        "total_s": 19.9,
+        "per_page_s": 1.7,
+        "pages": 12,
+        "device": "cpu"
+      }
+    }
+  },
+  "seal": {
+    "doc_00": {
+      "paddle": {
+        "off_cer": 2.16,
+        "on_cer": 2.06,
+        "off_wer": 43.18,
+        "on_wer": 42.7
+      },
+      "hybrid_vl": {
+        "off_cer": 1.6,
+        "on_cer": 1.82,
+        "off_wer": 14.46,
+        "on_wer": 14.94
+      },
+      "paddle_vl": {
+        "off_cer": 7.46,
+        "on_cer": 7.66,
+        "off_wer": 16.66,
+        "on_wer": 16.86
+      }
+    },
+    "doc_04": {
+      "paddle": {
+        "off_cer": 1.16,
+        "on_cer": 0.56,
+        "off_wer": 35.8,
+        "on_wer": 34.3
+      },
+      "hybrid_vl": {
+        "off_cer": 0.76,
+        "on_cer": 0.5,
+        "off_wer": 4.19,
+        "on_wer": 3.92
+      },
+      "paddle_vl": {
+        "off_cer": 0.72,
+        "on_cer": 0.59,
+        "off_wer": 5.04,
+        "on_wer": 5.34
+      }
+    }
+  },
+  "cpu_doc00": {
+    "paddle": {
+      "cer": 2.16,
+      "wer": 43.45,
+      "total_s": 150.5,
+      "per_page_s": 30.1,
+      "pages": 5,
+      "device": "cpu"
+    }
+  }
+}

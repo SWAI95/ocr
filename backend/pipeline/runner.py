@@ -37,18 +37,9 @@ def is_available(engine_id: str) -> bool:
     if engine_id == "tesseract":
         import shutil
         return shutil.which("tesseract") is not None
-    # paddle_vl 은 VLM 의 fused 커널(fuse_rms_norm / sparse flash-attn)이 sm_120
-    # (Blackwell) 미지원 → 5090 에선 인식이 빈 출력. 그 환경에선 비가용 처리(웹 비교
-    # 오염 방지). 4090 등 비-Blackwell 은 native GPU 로 정상. OCR_PADDLE_VL_FORCE=1 로 강제.
-    if engine_id == "paddle_vl":
-        import os
-        if os.environ.get("OCR_PADDLE_VL_FORCE", "0").lower() in ("1", "on", "true"):
-            return True
-        try:
-            from backend.engines.paddle_engine import _is_blackwell_gpu
-            return not _is_blackwell_gpu()
-        except Exception:
-            return True
+    # paddle_vl: cu129 휠 + markdown 접근자 수정 후 Blackwell(5090) GPU 도 정상
+    # 동작 확인(실측). 과거의 Blackwell 비가용 처리는 제거 — paddleocr 만 깔려 있으면
+    # 가용. (CPU 강제는 OCR_PADDLE_VL_GPU=off.)
     return True
 
 
@@ -63,4 +54,39 @@ def get_engine(engine_id: str) -> OCREngine:
 
 
 def run(engine_id: str, image, opts: EngineOptions) -> OCRResult:
-    return get_engine(engine_id).run(image, opts)
+    """엔진 실행 + 결정론적 후처리 정규화(W→₩ 등)를 최종 출력에 1회 적용.
+
+    hybrid_vl 내부의 paddle/ollama 호출은 engine.run() 을 직접 거치므로 여기서
+    이중 적용되지 않고, 사용자에게 반환되는 최상위 결과에만 한 번 정규화된다.
+    """
+    from backend.postprocess import normalize_ocr_text
+    result = get_engine(engine_id).run(image, opts)
+    for ln in result.lines:
+        ln.text = normalize_ocr_text(ln.text)
+    return result
+
+
+def release_all() -> None:
+    """캐시된 모든 엔진 인스턴스를 내리고 GPU(VRAM)를 반환한다.
+
+    멀티엔진 비교에서 엔진을 '하나 올려 돌리고 → 내리고 → 다음 올리고'로
+    순차 처리하기 위함. 여러 엔진 모델이 동시에 VRAM 을 점유하면 Ollama 가
+    Qwen 을 올릴 자리가 부족하다 판단해 CPU 로 폴백(~200초/page)하는데,
+    엔진 전환 사이에 VRAM 을 비워 Ollama 가 GPU 를 잡게 한다.
+    """
+    import gc
+    for inst in list(_instances.values()):
+        rel = getattr(inst, "release", None)
+        if callable(rel):
+            try:
+                rel()
+            except Exception:  # noqa: BLE001
+                pass
+    _instances.clear()
+    gc.collect()
+    try:
+        import paddle
+        if paddle.device.is_compiled_with_cuda():
+            paddle.device.cuda.empty_cache()
+    except Exception:  # noqa: BLE001
+        pass

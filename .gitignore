@@ -21,3 +21,10 @@ samples/**
 
 # 로그
 *.log
+
+# 에이전트/스킬 도구 (OCR 프로젝트와 무관, 별도 관리)
+.agents/
+skills-lock.json
+
+# 런타임 로그 디렉토리
+logs/

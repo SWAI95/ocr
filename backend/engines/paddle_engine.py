@@ -46,7 +46,6 @@ def _norm_label(raw: str) -> str:
 
 
 _paddle_gpu_ok: Optional[bool] = None
-_blackwell_gpu: Optional[bool] = None
 
 
 def _paddle_gpu_usable() -> bool:
@@ -80,27 +79,6 @@ def _paddle_gpu_usable() -> bool:
     except Exception:
         _paddle_gpu_ok = False
     return _paddle_gpu_ok
-
-
-def _is_blackwell_gpu() -> bool:
-    """현재 GPU 가 Blackwell(sm_120, compute capability major>=12)인지.
-
-    cu129 로 일반 conv(레이아웃/검출)는 Blackwell 에서 동작하지만, PaddleOCR-VL 의
-    VLM 생성 커널은 아직 빈 출력을 낸다. paddle_vl 가용성/차단 판정에 사용.
-    """
-    global _blackwell_gpu
-    if _blackwell_gpu is not None:
-        return _blackwell_gpu
-    try:
-        import paddle
-        if paddle.device.is_compiled_with_cuda() and \
-                paddle.device.cuda.device_count() > 0:
-            _blackwell_gpu = paddle.device.cuda.get_device_capability(0)[0] >= 12
-        else:
-            _blackwell_gpu = False
-    except Exception:
-        _blackwell_gpu = False
-    return _blackwell_gpu
 
 
 def _device_str(use_gpu: bool) -> str:
@@ -177,6 +155,12 @@ class PaddleEngine(OCREngine):
         self._ocr_cache: dict[tuple, object] = {}
         self._layout_cache: dict[str, object] = {}
         self._struct_cache: dict[tuple, object] = {}
+
+    def release(self) -> None:
+        """로드된 모델 캐시를 비워 GPU(VRAM)를 반환(비교 시 엔진 전환 간)."""
+        self._ocr_cache.clear()
+        self._layout_cache.clear()
+        self._struct_cache.clear()
 
     # --- 모델 로더 (캐시) ---
     def _get_ocr(self, det_model: str, rec_model: str, lang: str,

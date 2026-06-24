@@ -1,0 +1,10 @@
+# === 고정(절대 바꾸지 않을) 패키지 — torch 계열만 ===
+#
+# torch/torchvision 은 cu129 휠(4090 GPU 동작 검증 버전)으로 고정한다.
+# 그 외(numpy 포함)는 전부 최신으로 받는다 — 이 constraints 로 막지 않는다.
+#
+# 사용: pip download / pip install 에 -c requirements/constraints.txt 로 함께 건다.
+# 상세 절차: docs/내부망_배포_가이드.md
+
+torch==2.8.0+cu129
+torchvision==0.23.0+cu129

@@ -31,8 +31,23 @@ OCR_OFFLINE=1 ./.venv/bin/python scripts/smoke_test.py
 
 ## 엔진 (벤치)
 paddle(Primary, PP-StructureV3) · **hybrid_vl(페이지 레이아웃으로 분류 → 폼·표=Paddle /
-줄글=Qwen VLM 라우팅; 줄바꿈 단락 WER 복구)** · paddle_vl(4090 전용 VLM) ·
+줄글=Qwen VLM 라우팅; 줄바꿈 단락 WER 복구)** · paddle_vl(PaddleOCR-VL 0.9B,
+**5090·4090 GPU 모두 동작** — cu129 + markdown 접근자 수정 후 5090 정상) ·
 ollama_vl(로컬 Ollama VLM, 5090 GPU) · easyocr · tesseract(sudo 설치 필요).
+
+- **후처리 정규화(`postprocess.normalize_ocr_text`, runner.run 일괄 적용)**: ① 숫자 앞
+  단독 'W'→'₩'(원화기호 오인식, KRW·MW 보호) ② VLM 의 리터럴 '\n' 아티팩트 제거.
+  끄기 `OCR_NORMALIZE=off`. (실측 doc_00_p1 3.0→2.6%.)
+- **paddle_vl 실측(2026-06)**: 평균 CER 3.9%(paddle 3.1%)지만 reading-order 깨진 폼/줄글
+  페이지엔 압도적(doc_05_p9 19.6→3.3%, doc_01_p0 15.9→7.8%). 표-heavy/헤더 페이지엔 약함
+  (표가 `<table>` 로 빠져 라인 누락). rec 모델 교체 불가: PP-OCRv5_server_rec 는 한글
+  CER 90%, korean_PP-OCRv5_mobile_rec 가 offline 최선. 워스트 페이지 개선 레버 = VLM 라우팅.
+- **hybrid VLM 백엔드 선택(`OCR_HYBRID_VLM`)**: `auto`(기본 — Ollama 떠 있으면 Qwen,
+  아니면 paddle_vl 폴백) | `ollama_vl`(Qwen) | `paddle_vl`(in-process, **완전 offline**).
+  **paddle_vl 백엔드로 hybrid 평균 CER 2.3%**(paddle 3.1%, paddle_vl 단독 3.9% 보다 우수)
+  — Ollama 없이도 reading-order 복원. 병합이 해로운 유일 케이스는 Paddle 순서가 심하게
+  깨진 doc_05_p9(병합 12.2% vs paddle_vl 단독 3.3%) — 1페이지뿐이라 always-merge 가 순이득.
+  (개선 여지: sim(paddle,vlm) 낮으면 병합 스킵하는 게이트, 효과 ~0.3%/avg 라 보류.)
 
 - **hybrid_vl 병합(항상)**: 줄글→Qwen 경로에서 **매 줄글 페이지를 항상** 'Paddle 글자(정확)
   + Qwen 띄어쓰기(가독성)'로 문자 단위 병합한다(`_merge_paddle_chars_qwen_spacing`). 과거엔

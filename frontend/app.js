@@ -224,6 +224,11 @@ async function compare() {
   fd.append("use_table", el("use_table").checked);
   fd.append("use_gpu", el("use_gpu").checked);
   fd.append("ground_truth", el("ground_truth").value);
+  const pp = [];
+  if (el("pp_red").checked) pp.push("red_stamp");
+  if (el("pp_flatten").checked) pp.push("flatten");
+  if (el("pp_barcode").checked) pp.push("barcode");
+  fd.append("preprocess", pp.join(","));
 
   try {
     const res = await fetch("/api/compare", { method: "POST", body: fd });

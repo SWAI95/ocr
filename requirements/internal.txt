@@ -1,0 +1,30 @@
+# === 내부망 추가/상향 설치 대상 ===
+#
+# 정책: torch 계열만 고정(constraints.txt), 나머지는 최신. numpy 는 2.x 로 상향.
+#   - aicore 복사본엔 numpy 1.26.4 가 이미 깔려 있어, 강제로 올리려면 명시 + -U 필요.
+#   - paddleocr/paddlex/transformers 는 엔진 코드가 3.6.x API(res.markdown 프로퍼티,
+#     PaddleOCRVL native, PPStructureV3 파라미터)에 결합돼 있어 '검증된 버전'으로 핀.
+#     (최신으로 풀고 싶으면 == 핀을 떼면 됨 — 단 엔진 동작 재검증 필요.)
+#   - paddlepaddle-gpu 는 cu129 휠을 별도 단계에서 --no-deps 로 설치(여기 넣지 않음).
+#
+# 휠 수집(빌드 머신, 인터넷 O):
+#   pip download -r requirements/internal.txt -c requirements/constraints.txt -d wheelhouse \
+#     --index-url https://pypi.org/simple \
+#     --extra-index-url https://download.pytorch.org/whl/cu129 \
+#     --extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cu129/
+# 내부망 설치(인터넷 X) — numpy 등 공용 스택을 numpy 2 호환 최신으로 끌어올리기 위해 eager:
+#   pip install -U --upgrade-strategy eager --no-index --find-links wheelhouse \
+#     -c requirements/constraints.txt -r requirements/internal.txt
+#
+# 상세 절차: docs/내부망_배포_가이드.md
+
+numpy>=2.1,<3              # 1.x → 2.x 상향(사용자 지시). scipy/pandas/scikit-image 등은 eager 로 동반 상향
+paddleocr==3.6.0          # 엔진 코드가 3.6.x API에 결합 — 핀 유지 권장
+paddlex[ocr]==3.6.1
+transformers==4.57.6      # PaddleOCR-VL(paddle_vl) native backend 호환 버전
+easyocr                   # 최신
+opencv-python-headless    # 최신
+pypdfium2                 # 최신
+pdf2image                 # 최신(poppler 폴백용; pypdfium2가 기본 PDF 처리)
+jiwer                     # 최신
+python-Levenshtein        # 최신

@@ -18,7 +18,7 @@
         ],
         "recognition": [
           {"id": "korean_PP-OCRv5_mobile_rec", "lang": "korean", "desc": "한국어 전용 v5 mobile", "default": true},
-          {"id": "PP-OCRv5_server_rec", "lang": "multi", "desc": "다국어 server(한+영+숫자+기호)"},
+          {"id": "PP-OCRv5_server_rec", "lang": "multi", "desc": "다국어 server — ⚠한글은 한자로 오인식(실측 CER 90%), 한국어엔 부적합"},
           {"id": "PP-OCRv5_mobile_rec", "lang": "multi", "desc": "다국어 mobile"},
           {"id": "korean_PP-OCRv3_mobile_rec", "lang": "korean", "desc": "한국어 v3(대조군)"}
         ],
@@ -36,9 +36,9 @@
       }
     },
     "paddle_vl": {
-      "label": "PaddleOCR-VL-0.9B (VLM, in-process) — 4090 GPU 필요",
+      "label": "PaddleOCR-VL-0.9B (VLM, in-process) — 5090·4090 GPU",
       "license": "Apache-2.0",
-      "note": "VLM. native 백엔드로 in-process(서버 불필요). RTX4090(sm_89) GPU에서 동작. Blackwell(5090) dev에서는 paddle 커널 미지원으로 실행 불가(CUDA_VISIBLE_DEVICES= 로도 gpu-paddle이 CUDA 강제).",
+      "note": "VLM. native 백엔드로 in-process(서버 불필요·완전 오프라인). cu129 휠 + markdown 접근자 수정 후 RTX5090(Blackwell)·4090 모두 GPU 동작(4.8~11.5초/p). reading-order가 깨지는 폼/줄글에 강하고 표-heavy 페이지엔 약함. hybrid_vl의 오프라인 VLM 백엔드로도 사용(OCR_HYBRID_VLM=paddle_vl). CPU 강제는 OCR_PADDLE_VL_GPU=off.",
       "stages": {
         "recognition": [
           {"id": "PaddleOCR-VL-1.6-0.9B", "lang": "multi", "desc": "0.9B VLM, 109개 언어, 마크다운/표 출력", "default": true}
@@ -49,9 +49,9 @@
       }
     },
     "hybrid_vl": {
-      "label": "하이브리드 (Paddle 레이아웃 → 폼·표=Paddle / 줄글=Qwen VLM)",
+      "label": "하이브리드 (Paddle 레이아웃 → 폼·표=Paddle / 줄글=VLM 병합)",
       "license": "Apache-2.0 + model별 상이",
-      "note": "페이지를 Paddle 레이아웃으로 분류해 table 지배 페이지는 PPStructureV3, 줄글 페이지는 Qwen2.5VL 로 라우팅. 폼 CER + 줄글 WER 을 둘 다 취함. paddleocr + Ollama 서버 필요.",
+      "note": "페이지를 Paddle 레이아웃으로 분류해 table 지배 페이지는 PPStructureV3, 줄글 페이지는 VLM 으로 라우팅 후 'Paddle 글자 + VLM 띄어쓰기'로 병합(글자는 전통 DL 인식기 PP-OCRv5, 순서/띄어쓰기는 VLM). VLM 백엔드는 OCR_HYBRID_VLM=auto(기본, Ollama 있으면 Qwen) / ollama_vl / paddle_vl 선택 — paddle_vl 백엔드는 Ollama 없이 동작하는 완전 오프라인 경로(평균 CER 2.3%).",
       "stages": {
         "layout": [
           {"id": "PP-DocLayout_plus-L", "desc": "페이지 분류용 레이아웃(고정밀)", "default": true},
