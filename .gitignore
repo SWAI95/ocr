@@ -12,6 +12,8 @@ models/**
 # 오프라인 번들 산출물
 wheelhouse/
 *.tar.gz
+dist/
+*.bundle
 
 # 런타임 산출물
 data/outputs/**
