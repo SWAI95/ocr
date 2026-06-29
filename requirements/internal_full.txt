@@ -25,7 +25,19 @@
 # --- GPU 런타임 (torch 계열만 cu129 고정) ---
 torch==2.8.0+cu129
 torchvision==0.23.0+cu129
-paddlepaddle-gpu==3.3.1
+# ⚠️ paddlepaddle-gpu 는 여기 넣지 않는다 — torch 와 nvidia-cu12-* 의존성 버전이
+#    충돌(ResolutionImpossible)해 같이 resolve 하면 실패한다. 반드시 별도 --no-deps:
+#      다운로드: pip download "paddlepaddle-gpu==3.3.1" -d wheelhouse --no-deps --only-binary=:all: \
+#                  --index-url https://www.paddlepaddle.org.cn/packages/stable/cu129/
+#      설치    : pip install --no-index --find-links wheelhouse --no-deps "paddlepaddle-gpu==3.3.1"
+
+# --- paddlepaddle-gpu 의 순수(비-nvidia) 의존성 ---
+#   paddle 을 --no-deps 로 깔기 때문에 이 4개가 빠져 'import paddle' 이 깨진다(실측: No module named 'google').
+#   nvidia-cu12-* 는 torch 가 가져온 버전으로 충족(버전 경고는 비치명적, GPU 동작 확인됨)이라 제외.
+httpx
+protobuf>=3.20.2
+opt_einsum==3.3.0
+cuda-python==12.9.4
 
 # --- OCR 엔진 코어 (엔진 코드가 3.6.x API에 결합 → 핀 유지) ---
 paddleocr==3.6.0

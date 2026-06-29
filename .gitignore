@@ -11,7 +11,11 @@ models/**
 
 # 오프라인 번들 산출물
 wheelhouse/
+debs/
+ollama_bundle/
 *.tar.gz
+*.tar.zst
+*.tgz
 dist/
 *.bundle
 
